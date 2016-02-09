@@ -5,10 +5,11 @@ import time
 
 from Bio import SeqIO
 import matplotlib #to set use('Agg') 
+matplotlib.use('Agg') #place this before any other pylab/matplotlib/pyplot import
 import matplotlib.pyplot as plt
-matplotlib.use('Agg')
 
 from progressbar import ProgressBar
+
 
 #アライメントされたfastaファイルと，hmmscanのdombtblout結果ファイルを読み込まs，予測された領域をdrawする。
 #前提：hmmscanの結果ファイルに入っているモチーフ・ドメインの領域がちゃんとfastaファイル内の配列に存在すること
@@ -50,10 +51,12 @@ class VisualiseProteinDomainRegion(object):
             self.fasta_records = list(SeqIO.parse(fasta_fh, "fasta"))
 
     def prep_data(self):
+        print("loading files..")
         self.get_domain_region_from_hmmscan_outfile(self.hmmscan_outfile)
         self.read_fasta(self.aligned_fasta)
 
     def create_image_matrix(self):
+        print("creating image matrix..")
         self.num_matrix = []
         self.pbar = ProgressBar(max_value=len(self.fasta_records)) #for just indicate progress bar
         for i,seq in enumerate(self.fasta_records): #計算量...orz
@@ -83,6 +86,7 @@ class VisualiseProteinDomainRegion(object):
 #        print(self.num_matrix)
 
     def draw_image_from_matrix(self, outfile):
+        print("drawing image..")
         # define the colormap
         cmap = plt.cm.jet
         cmaplist = ['white', 'gray', 'blue'] #問題点：例えば3カラー要素あるのに0,1しかないと，1なのに3番目のカラーになる
