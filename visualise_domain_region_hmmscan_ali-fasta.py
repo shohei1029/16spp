@@ -8,6 +8,8 @@ import matplotlib #to set use('Agg')
 import matplotlib.pyplot as plt
 matplotlib.use('Agg')
 
+from progressbar import ProgressBar
+
 #アライメントされたfastaファイルと，hmmscanのdombtblout結果ファイルを読み込まs，予測された領域をdrawする。
 #前提：hmmscanの結果ファイルに入っているモチーフ・ドメインの領域がちゃんとfastaファイル内の配列に存在すること
 
@@ -53,18 +55,18 @@ class VisualiseProteinDomainRegion(object):
 
     def create_image_matrix(self):
         self.num_matrix = []
-        for seq in self.fasta_records: #計算量...orz
+        self.pbar = ProgressBar(max_value=len(self.fasta_records)) #for just indicate progress bar
+        for i,seq in enumerate(self.fasta_records): #計算量...orz
             row = []
             domain_region_pos = set()
             for d_name,pos_dic in self.domain_dict[seq.id].items(): #計算量... 下のfor文の中で一緒に処理できるようにしたひ
                 gapped_start = convert_seqpos_to_gapped_seqpos(pos_dic["start"],seq.seq)
                 gapped_end = convert_seqpos_to_gapped_seqpos(pos_dic["end"],seq.seq)
-                print(d_name,gapped_start,gapped_end)
+#                print(d_name,gapped_start,gapped_end)
 
                 tmp_domain_region_pos = set(range(gapped_start-1,gapped_end))
-                print("overlapping..",domain_region_pos.intersection(tmp_domain_region_pos))
+#                print("overlapping..",domain_region_pos.intersection(tmp_domain_region_pos))
                 domain_region_pos = domain_region_pos.union(tmp_domain_region_pos)
-
 
             for p,c in enumerate(seq.seq): 
                 if c == '-':
@@ -74,6 +76,9 @@ class VisualiseProteinDomainRegion(object):
                 else:
                     row.append(1) #normal aa
             self.num_matrix.append(row)
+           
+            self.pbar.update(i)
+
 
 #        print(self.num_matrix)
 
@@ -88,6 +93,8 @@ class VisualiseProteinDomainRegion(object):
         plt.imshow( self.num_matrix, interpolation='none', aspect=5, cmap=cmap) 
         plt.axis('off')
         plt.savefig(outfile, dpi = 500)
+
+        self.pbar.finish()
         
         
 def convert_seqpos_to_gapped_seqpos(pos,seq):
@@ -109,8 +116,8 @@ def convert_seqpos_to_gapped_seqpos(pos,seq):
 
 if __name__ == '__main__':
     stime = time.time()
-    hiv_pol = VisualiseProteinDomainRegion("../data/mafft-linsi_HIV-1-gM-noRs_pol-aa_v3.fasta", "../data/Pfam-hmmscan_HIV-1-gM-noRs_pol-aa_v3.txt")
-#    test = VisualiseProteinDomainRegion("../data/mafft-linsi_test.fasta", "../data/Pfam-hmmscan_HIV-1-gM-noRs_pol-aa_v3.txt")
+#    hiv_pol = VisualiseProteinDomainRegion("../data/mafft-linsi_HIV-1-gM-noRs_pol-aa_v3.fasta", "../data/Pfam-hmmscan_HIV-1-gM-noRs_pol-aa_v3.txt")
+    hiv_pol = VisualiseProteinDomainRegion("../data/mafft-linsi_test.fasta", "../data/Pfam-hmmscan_HIV-1-gM-noRs_pol-aa_v3.txt")
     hiv_pol.create_image_matrix()
     hiv_pol.draw_image_from_matrix("./HIV-1-gM-noRs_pol-aa_v3.png")
     print(time.time() - stime, "[s]")
