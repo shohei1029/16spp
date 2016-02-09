@@ -58,7 +58,7 @@ class VisualiseProteinDomainRegion(object):
     def create_image_matrix(self):
         print("creating image matrix..")
         self.num_matrix = []
-        self.pbar = ProgressBar(max_value=len(self.fasta_records)) #for just indicate progress bar
+        pbar = ProgressBar(max_value=len(self.fasta_records)) #for just indicate progress bar
         for i,seq in enumerate(self.fasta_records): #計算量...orz
             row = []
             domain_region_pos = set()
@@ -80,12 +80,13 @@ class VisualiseProteinDomainRegion(object):
                     row.append(1) #normal aa
             self.num_matrix.append(row)
            
-            self.pbar.update(i)
+            pbar.update(i)
+        pbar.finish()
 
 
 #        print(self.num_matrix)
 
-    def draw_image_from_matrix(self, outfile):
+    def draw_image_from_matrix(self, outfile, aspect=5):
         print("drawing image..")
         # define the colormap
         cmap = plt.cm.jet
@@ -98,7 +99,6 @@ class VisualiseProteinDomainRegion(object):
         plt.axis('off')
         plt.savefig(outfile, dpi = 500)
 
-        self.pbar.finish()
         
         
 def convert_seqpos_to_gapped_seqpos(pos,seq):
@@ -120,9 +120,13 @@ def convert_seqpos_to_gapped_seqpos(pos,seq):
 
 if __name__ == '__main__':
     stime = time.time()
-#    hiv_pol = VisualiseProteinDomainRegion("../data/mafft-linsi_HIV-1-gM-noRs_pol-aa_v3.fasta", "../data/Pfam-hmmscan_HIV-1-gM-noRs_pol-aa_v3.txt")
-    hiv_pol = VisualiseProteinDomainRegion("../data/mafft-linsi_test.fasta", "../data/Pfam-hmmscan_HIV-1-gM-noRs_pol-aa_v3.txt")
+    hiv_pol = VisualiseProteinDomainRegion("../data/mafft-linsi_HIV-1-gM-noRs_pol-aa_v3.fasta", "../data/Pfam-hmmscan_HIV-1-gM-noRs_pol-aa_v3.txt")
+#    hiv_pol = VisualiseProteinDomainRegion("../data/mafft-linsi_test.fasta", "../data/Pfam-hmmscan_HIV-1-gM-noRs_pol-aa_v3.txt")
     hiv_pol.create_image_matrix()
-    hiv_pol.draw_image_from_matrix("./HIV-1-gM-noRs_pol-aa_v3.png")
+    hiv_pol.draw_image_from_matrix("../results/HIV-1-gM-noRs_pol-aa_v3_aspect5.png",5)
+    hiv_pol.draw_image_from_matrix("../results/HIV-1-gM-noRs_pol-aa_v3_aspect10.png",10)
+    hiv_pol.draw_image_from_matrix("../results/HIV-1-gM-noRs_pol-aa_v3_aspect1.png",1)
+    hiv_pol.draw_image_from_matrix("../results/HIV-1-gM-noRs_pol-aa_v3_aspect0.8.png",0.8)
+    hiv_pol.draw_image_from_matrix("../results/HIV-1-gM-noRs_pol-aa_v3_aspect0.5.png",0.5)
     print(time.time() - stime, "[s]")
 
