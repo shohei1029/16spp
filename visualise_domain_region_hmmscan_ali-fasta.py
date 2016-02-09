@@ -95,7 +95,7 @@ class VisualiseProteinDomainRegion(object):
         # create the new map
         cmap = cmap.from_list('Custom cmap', cmaplist, cmap.N)
 
-        plt.imshow( self.num_matrix, interpolation='none', aspect=5, cmap=cmap) 
+        plt.imshow( self.num_matrix, interpolation='none', aspect=aspect, cmap=cmap) 
         plt.axis('off')
         plt.savefig(outfile, dpi = 500)
 
