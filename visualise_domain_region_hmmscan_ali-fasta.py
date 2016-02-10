@@ -63,18 +63,18 @@ class VisualiseProteinDomainRegion(object):
         self.num_matrix = []
         pbar = ProgressBar(max_value=len(self.fasta_records)) #for just indicate progress bar
         for i,seq in enumerate(self.fasta_records): #計算量...orz
-            print("\n",seq.id)
+#            print("\n",seq.id)
             row = []
             domain_region_pos = set()
             for d_name,pos_dic in self.domain_dict[seq.id].items(): #計算量... 下のfor文の中で一緒に処理できるようにしたひ
                 gapped_start = convert_seqpos_to_gapped_seqpos(pos_dic["start"],seq.seq)
                 gapped_end = convert_seqpos_to_gapped_seqpos(pos_dic["end"],seq.seq)
-                print(d_name,gapped_start,gapped_end)
+#                print(d_name,gapped_start,gapped_end)
 
                 tmp_domain_region_pos = set(range(gapped_start-1,gapped_end))
                 dom_pos_overlap = domain_region_pos.intersection(tmp_domain_region_pos)
-                if dom_pos_overlap:
-                    print("overlapping..",dom_pos_overlap)
+#                if dom_pos_overlap:
+#                    print("overlapping..",dom_pos_overlap)
                 domain_region_pos = domain_region_pos.union(tmp_domain_region_pos)
 
             for p,c in enumerate(seq.seq): 
