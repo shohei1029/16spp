@@ -45,6 +45,23 @@ class VisualiseProteinDomainRegion(object):
                 domain_end   = int(hmmscandata[18])
                 domain_des   = (' ').join(hmmscandata[22:])
         
+                def alter_domain_name_for_multihit(dn): #暫定：マルチヒットが3回までだと仮定
+                    if dn in self.domain_dict[query_acc].keys():
+                        print("multihit!",dn)
+                        dn += "_"
+                        if dn in self.domain_dict[query_acc].keys():
+                            dn += "_"
+                            return dn
+                        else:
+                            return dn
+#                        alter_domain_name_for_multihit(dn) #ほんとは再帰で何回マルチヒットでも大丈夫にしたい
+                    else:
+                        return dn 
+
+#                print(self.domain_dict[query_acc][domain_name])
+                tmp_dn = alter_domain_name_for_multihit(domain_name)
+                domain_name = tmp_dn
+
                 self.domain_name_dict[domain_name] = domain_des
                 self.domain_dict[query_acc][domain_name]["start"] = domain_start
                 self.domain_dict[query_acc][domain_name]["end"]   = domain_end
@@ -63,18 +80,19 @@ class VisualiseProteinDomainRegion(object):
         self.num_matrix = []
         pbar = ProgressBar(max_value=len(self.fasta_records)) #for just indicate progress bar
         for i,seq in enumerate(self.fasta_records): #計算量...orz
-#            print("\n",seq.id)
+            if print_details: print("\n",seq.id)
             row = []
             domain_region_pos = set()
+
             for d_name,pos_dic in self.domain_dict[seq.id].items(): #計算量... 下のfor文の中で一緒に処理できるようにしたひ
                 gapped_start = convert_seqpos_to_gapped_seqpos(pos_dic["start"],seq.seq)
                 gapped_end = convert_seqpos_to_gapped_seqpos(pos_dic["end"],seq.seq)
-#                print(d_name,gapped_start,gapped_end)
+                if print_details: print(d_name,gapped_start,gapped_end)
 
                 tmp_domain_region_pos = set(range(gapped_start-1,gapped_end))
                 dom_pos_overlap = domain_region_pos.intersection(tmp_domain_region_pos)
-#                if dom_pos_overlap:
-#                    print("overlapping..",dom_pos_overlap)
+                if print_details and dom_pos_overlap:
+                    print("overlapping..",dom_pos_overlap)
                 domain_region_pos = domain_region_pos.union(tmp_domain_region_pos)
 
             for p,c in enumerate(seq.seq): 
@@ -92,7 +110,7 @@ class VisualiseProteinDomainRegion(object):
 
 #        print(self.num_matrix)
 
-    def draw_image_from_matrix(self, outfile, aspect=5):
+    def draw_image_from_matrix(self, outfile, aspect=0.4, xaxis=False):
         print("drawing image..")
         # define the colormap
         cmap = plt.cm.jet
@@ -102,8 +120,11 @@ class VisualiseProteinDomainRegion(object):
         cmap = cmap.from_list('Custom cmap', cmaplist, cmap.N)
 
         plt.imshow( self.num_matrix, interpolation='none', aspect=aspect, cmap=cmap) 
-        plt.axis('off')
-        plt.savefig(outfile, dpi = 500)
+        if xaxis:
+            plt.tick_params(labelleft='off')
+        else:
+            plt.axis('off')
+        plt.savefig(outfile, dpi = 800)
 
         
         
@@ -125,18 +146,21 @@ def convert_seqpos_to_gapped_seqpos(pos,seq):
 
 
 if __name__ == '__main__':
+    print_details = False
     os.makedirs("../results/domain_pos",exist_ok=True)
     stime = time.time()
-    hiv_pol = VisualiseProteinDomainRegion("../data/A,B,C_mafft-linsi_HIV-1-gM-noRs_pol-aa_v3.fasta", "../data/Pfam-hmmscan_HIV-1-gM-noRs_pol-aa_v3.txt")
-#    hiv_pol = VisualiseProteinDomainRegion("../data/mafft-linsi_test.fasta", "../data/Pfam-hmmscan_HIV-1-gM-noRs_pol-aa_v3.txt")
+    hiv_pol = VisualiseProteinDomainRegion("../data/A,B,C_mafft-linsi_HIV-1-gM-noRs_pol-aa_v3.fasta", "../analysis/Pfam-hmmscan/PfamA29-hmmscan_HIV-1-gM-noRs_pol-aa_v3.txt")
+#    hiv_pol = VisualiseProteinDomainRegion("../data/mafft-linsi_test.fasta", "../analysis/Pfam-hmmscan/PfamA29-hmmscan_HIV-1-gM-noRs_pol-aa_v3.txt")
     hiv_pol.create_image_matrix()
+#    hiv_pol.draw_image_from_matrix("./test_HIV-1-gM-noRs_pol-aa_v3_aspect5.png",5) #test
 #    hiv_pol.draw_image_from_matrix("../results/HIV-1-gM-noRs_pol-aa_v3_aspect0.1.png",0.1)
 #    hiv_pol.draw_image_from_matrix("../results/HIV-1-gM-noRs_pol-aa_v3_aspect0.2.png",0.2)
-    hiv_pol.draw_image_from_matrix("../results/domain_pos/A,B,C_HIV-1-gM-noRs_pol-aa_v3_aspect0.3.png",0.3)
-    hiv_pol.draw_image_from_matrix("../results/domain_pos/A,B,C_HIV-1-gM-noRs_pol-aa_v3_aspect0.4_.png",0.4)
-    hiv_pol.draw_image_from_matrix("../results/domain_pos/A,B,C_HIV-1-gM-noRs_pol-aa_v3_aspect0.5.png",0.5)
-    hiv_pol.draw_image_from_matrix("../results/domain_pos/A,B,C_HIV-1-gM-noRs_pol-aa_v3_aspect0.5.png",0.6)
-    hiv_pol.draw_image_from_matrix("../results/domain_pos/A,B,C_HIV-1-gM-noRs_pol-aa_v3_aspect0.8.png",0.8)
+#    hiv_pol.draw_image_from_matrix("../results/domain_pos/A,B,C_HIV-1-gM-noRs_pol-aa_v3_aspect0.3.png",0.3)
+#    hiv_pol.draw_image_from_matrix("../results/domain_pos/A,B,C_HIV-1-gM-noRs_pol-aa_v3_aspect0.4_axis.png",0.4,True)
+#    hiv_pol.draw_image_from_matrix("../results/domain_pos/A,B,C_HIV-1-gM-noRs_pol-aa_v3_aspect0.4.png",0.4,False)
+#    hiv_pol.draw_image_from_matrix("../results/domain_pos/A,B,C_HIV-1-gM-noRs_pol-aa_v3_aspect0.5.png",0.5)
+#    hiv_pol.draw_image_from_matrix("../results/domain_pos/A,B,C_HIV-1-gM-noRs_pol-aa_v3_aspect0.5.png",0.6)
+#    hiv_pol.draw_image_from_matrix("../results/domain_pos/A,B,C_HIV-1-gM-noRs_pol-aa_v3_aspect0.8.png",0.8)
 #    hiv_pol.draw_image_from_matrix("../results/HIV-1-gM-noRs_pol-aa_v3_aspect1.png",1)
     print(time.time() - stime, "[s]")
 
