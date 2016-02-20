@@ -146,21 +146,21 @@ def convert_seqpos_to_gapped_seqpos(pos,seq):
 
 
 if __name__ == '__main__':
-    print_details = False
+    print_details = True
     os.makedirs("../results/domain_pos",exist_ok=True)
     stime = time.time()
-    hiv_pol = VisualiseProteinDomainRegion("../data/A,B,C_mafft-linsi_HIV-1-gM-noRs_pol-aa_v3.fasta", "../analysis/Pfam-hmmscan/PfamA29-hmmscan_HIV-1-gM-noRs_pol-aa_v3.txt")
+#    hiv_pol = VisualiseProteinDomainRegion("../data/A,B,C_mafft-linsi_HIV-1-gM-noRs_pol-aa_v3.fasta", "../analysis/Pfam-hmmscan/PfamA29-hmmscan_HIV-1-gM-noRs_pol-aa_v3.txt")
 #    hiv_pol = VisualiseProteinDomainRegion("../data/mafft-linsi_test.fasta", "../analysis/Pfam-hmmscan/PfamA29-hmmscan_HIV-1-gM-noRs_pol-aa_v3.txt")
-    hiv_pol.create_image_matrix()
+#    hiv_pol.create_image_matrix()
 #    hiv_pol.draw_image_from_matrix("./test_HIV-1-gM-noRs_pol-aa_v3_aspect5.png",5) #test
-#    hiv_pol.draw_image_from_matrix("../results/HIV-1-gM-noRs_pol-aa_v3_aspect0.1.png",0.1)
-#    hiv_pol.draw_image_from_matrix("../results/HIV-1-gM-noRs_pol-aa_v3_aspect0.2.png",0.2)
 #    hiv_pol.draw_image_from_matrix("../results/domain_pos/A,B,C_HIV-1-gM-noRs_pol-aa_v3_aspect0.3.png",0.3)
 #    hiv_pol.draw_image_from_matrix("../results/domain_pos/A,B,C_HIV-1-gM-noRs_pol-aa_v3_aspect0.4_axis.png",0.4,True)
 #    hiv_pol.draw_image_from_matrix("../results/domain_pos/A,B,C_HIV-1-gM-noRs_pol-aa_v3_aspect0.4.png",0.4,False)
 #    hiv_pol.draw_image_from_matrix("../results/domain_pos/A,B,C_HIV-1-gM-noRs_pol-aa_v3_aspect0.5.png",0.5)
 #    hiv_pol.draw_image_from_matrix("../results/domain_pos/A,B,C_HIV-1-gM-noRs_pol-aa_v3_aspect0.5.png",0.6)
 #    hiv_pol.draw_image_from_matrix("../results/domain_pos/A,B,C_HIV-1-gM-noRs_pol-aa_v3_aspect0.8.png",0.8)
-#    hiv_pol.draw_image_from_matrix("../results/HIV-1-gM-noRs_pol-aa_v3_aspect1.png",1)
+    hiv_pol_c7_10seqs = VisualiseProteinDomainRegion("../data/mafft-linsi_10seqs_eachcluster_scps-c7_blastp_1e-5_A,B,C_HIV-1-gM-noRs_pol-aa_v3.fasta", "../analysis/Pfam-hmmscan/PfamA29-hmmscan_HIV-1-gM-noRs_pol-aa_v3.txt")
+    hiv_pol_c7_10seqs.create_image_matrix()
+    hiv_pol_c7_10seqs.draw_image_from_matrix("../results/domain_pos/10seqs_eachcluster_scps-c7_blastp_1e-5_A,B,C_HIV-1-gM-noRs_pol-aa_v3_aspect10_axis.png",10,True)
     print(time.time() - stime, "[s]")
 
