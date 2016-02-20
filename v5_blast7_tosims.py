@@ -3,11 +3,11 @@
 import re
 import time
 import sys
-#import numpy as np
 from collections import defaultdict
 import argparse
 import logging
 
+#needs to be installed
 from progressbar import ProgressBar
 
 logger = logging.getLogger(__name__)
@@ -28,11 +28,10 @@ start_time = time.time()
 
 # v4からの変更点(change log)
 # scps用 sim 形式のみの出力へ (cytoscapeもその形式で読み込むし) <ID1 ID2 sim>
-# ファイル出力時の拡張子変更 .sim から .sim.txtへ
-# loggingの導入
+# Introduction of logging and progressbar.
+# defaultで，sys.stdinから読み込んでsys.stdoutへ出力 (unix!)
 
 #予定?
-# defaultで，sys.stdinから読み込んでsys.stdoutへ出力 (unix!)
 
 
 ###################
@@ -53,33 +52,31 @@ edge_weight = args.cutoff_edge_weight
 #############
 # I/O files #
 #############
-logger.info("1st phase ---> Setting I/O files")
 in_file = args.input_file
 out_dir = args.output_dir
 
 if args.input_file:
-    in_fh = open(in_file,'r'); logger.info('1st phase ---> Opening...' + in_file) #BLAST output file (tabular format)
+    in_fh = open(in_file,'r') #BLAST output file (tabular format)
     out_fh = sys.stdout
 else:
     in_fh = sys.stdin
     
 if args.output_dir:
     if edge_num == 0:
-        out_file = '{}/t{}_{}.sim.txt'.format(out_dir,edge_weight,in_file.split('/')[-1])
+        out_file = '{}/t{}_{}.sim'.format(out_dir,edge_weight,in_file.split('/')[-1])
     else:
         logger.info("edge SHIBORIKOMI mode")
-        out_file = '{}/edges{}_t{}_{}.sim.txt'.format(out_dir,edge_num,edge_weight,in_file.split('/')[-1])
+        out_file = '{}/edges{}_t{}_{}.sim'.format(out_dir,edge_num,edge_weight,in_file.split('/')[-1])
     out_fh = open(out_file,'w')
 else:
     out_fh = sys.stdout
-    out_file = "sys.stdout"
+    out_file = "stdout"
 
 
 ###########################
 # Parse Blast output file #
 ###########################
 #0->query,1->subject,11->bit scores
-logger.info("2nd phase ---> Parse Blast output file...")
 blast = defaultdict(dict)
 tmp_scores = defaultdict(dict)
 entry_set = set()
@@ -128,7 +125,7 @@ else:
 #########################################################
 # Calculate sequence similarity scores (Matsui metrics) #
 #########################################################
-logger.info("3rd phase ---> Calculate sequence similarity scores")
+logger.info("Calculating sequence similarity scores and creating matrix..")
 entry_list = list(entry_set)
 entry_list = sorted(entry_list) #not necessary?
 mat = defaultdict(dict)
@@ -173,8 +170,7 @@ for i in entry_list:
             logger.warn("ZeroDivisionError!" + err)
             othererr.append(err)
 
-        mat[i][j] = 0 if i == j else score #松井さんのPerlスクリプトでは0にするようになっていたが，やめる。→どっちでもいいん？
-#        mat[i][j] = score #どっちでもいいみたい？でも結果なぁんか違うような気もする。その程度とも言える。
+        mat[i][j] = 0 if i == j else score #1だと自分自身へのエッジが生まれる
     pbar_count += 1
     pbar.update(pbar_count)
 pbar.finish()
@@ -183,7 +179,6 @@ pbar.finish()
 ###############################
 # Select top 5 edges per node #
 ###############################
-logger.info("4th phase ---> Select top {} edges per node".format(edge_num))
 best = defaultdict(dict)
 #best[str][str]
 
@@ -192,6 +187,7 @@ if edge_num == 0:
     best = mat
 else: #1つのノードと接続しているエッジ数を限定する場合
     #行列の場所をIDでやる。IDの場所を別のリストと対応づけてその場所の番号（数字）で比較するようにする。
+    logger.info("Select top {} edges per node".format(edge_num))
     for i,ic in enumerate(entry_list):
         sorted_list = sorted(mat[ic], reverse = True) #降順（大きい順）
         #print(sorted_list)
@@ -216,7 +212,6 @@ else: #1つのノードと接続しているエッジ数を限定する場合
 #######################################################
 # Output network as cytoscape or/and SCPS format file #
 #######################################################
-logger.info("5th phase ---> Output network as Cytoscape or/and SCPS format file")
 
 #best[str][str]
 for i in best.keys():
@@ -228,7 +223,6 @@ for i in best.keys():
 ##########
 # finish #
 ##########
-logger.info("End Phase ---><")
 out_fh.close()
 in_fh.close()
 
