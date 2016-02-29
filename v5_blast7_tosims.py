@@ -83,7 +83,7 @@ entry_set = set()
 p = re.compile('#')
 
 if args.nomultihit == True:
-    logger.info("NO Multi hit Blast ! :D")
+    logger.info("No multi hit BLAST mode! :D")
     for line in in_fh:
         if p.match(line):
             continue
@@ -99,7 +99,7 @@ if args.nomultihit == True:
         entry_set.add(subject)
     
 else:
-    logger.info("Multi hit Blast mode !!")
+    logger.info("Multi hit BLAST mode !!")
     for line in in_fh:
         if p.match(line):
             continue
