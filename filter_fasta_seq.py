@@ -52,5 +52,5 @@ if __name__ == '__main__':
         except END:
             pass
     
-    stderr.write(" ".join(["Delete",count,"seqs (",len(fastaobj),")"]))
-    stderr.write(" ".join(["Delete",count/len(fastaobj)*100,"%"]))
+    sys.stderr.write(" ".join(["Delete",count,"seqs (",len(fastaobj),")"]))
+    sys.stderr.write(" ".join(["Delete",count/len(fastaobj)*100,"%"]))
