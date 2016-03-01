@@ -12,7 +12,9 @@ from Bio import SeqIO
 #memo
 #Hmmerの結果ファイルからドメインの場所取得する
 #アライメント後fataファイルを読み込ませ，ドメインの位置を数字で表示（最長に合わせる）
-#手動で,ドメインもとにpolを４分割したときの境目数字を計算し，そこの配列を切り出す。（自動で切り出しもできるようにするかも。ハードコーディング
+#手動で,ドメインもとにpolを４分割したときの境目数字を計算し，ハードコーディングする
+#分割したときの各セクションについて，始め：終わりのリストの辞書を作成しておき，それを読み込ませて特定領域だけ切り出す。
+# →ドメインやる場合も同じ方式でできるように！！すばらしい
 
 stime = time.time()
 argvs = sys.argv
@@ -109,8 +111,9 @@ def make_seqsec_fasta(seq_secs_ld, alnfasta_dict):
     for seqsec_name, spos_l in seq_secs_ld.items():
         for k_acc in fa2_dict.keys():
             fasta_header = "{}-{}".format(k_acc, seqsec_name)
-            sec_seq   = fa2_dict[k_acc].seq[spos_l[0]-1:spos_l[1]-1]
-            outfa_fh.write(">{}\n{}\n".format(fasta_header,sec_seq))
+            sec_seq   = str(fa2_dict[k_acc].seq[spos_l[0]-1:spos_l[1]-1])
+            sec_seq_nogap = sec_seq.replace('-','')
+            outfa_fh.write(">{}\n{}\n".format(fasta_header,sec_seq_nogap))
 
 
 ##########

@@ -31,6 +31,8 @@ start_time = time.time()
 # Introduction of logging and progressbar.
 # defaultで，sys.stdinから読み込んでsys.stdoutへ出力 (unix!)
 
+# 16.3.1 BLAST idendityでのcutoffオプションの追加 #unix commandでやったほうが高速です
+
 #予定?
 
 
@@ -42,7 +44,8 @@ parser.add_argument("-m","--nomultihit",type=bool,default=True,choices=[True,Fal
 parser.add_argument("-i","--input_file",type=str,help="Input Blast output file (tabular).")
 parser.add_argument("-w","--output_dir",type=str,help="Output directory")
 parser.add_argument("-k","--edge_num",type=int,default=0,help="Ideal number of edges. Conserve alledges -> 0（エッジ数絞らなくていいなら0を指定")
-parser.add_argument("-c","--cutoff_edge_weight",type=float,default=0.0,help="Cutoff by edge weight (i.e. sim(x,y)).")
+parser.add_argument("-c","--cutoff_edge_weight",type=float,default=0.0,help="Cutoff by edge weight (i.e. sim(x,y)).(<=),以下")
+parser.add_argument("-p","--cutoff_identity",type=float,help="Cutoff by BLAST % identity  (>=),指定値以上を残す")
 args = parser.parse_args()
 
 edge_num = args.edge_num
@@ -84,19 +87,40 @@ p = re.compile('#')
 
 if args.nomultihit == True:
     logger.info("No multi hit BLAST mode! :D")
-    for line in in_fh:
-        if p.match(line):
-            continue
-        line = line.rstrip()
-    
-        query   = line.split('\t')[0]
-        subject = line.split('\t')[1]
-        score   = float(line.split('\t')[11])
+    if args.cutoff_identity:
+        logger.info("cut off by % identity".format(args.cutoff_identity))
+        for line in in_fh:
+            if p.match(line):
+                continue
+            line = line.rstrip()
+        
+            query   = line.split('\t')[0]
+            subject = line.split('\t')[1]
+            score   = float(line.split('\t')[11])
+            identity   = float(line.split('\t')[2])
 
-        blast[query][subject] = score
+            if identity < args.cutoff_identity:
+                continue
     
-        entry_set.add(query)
-        entry_set.add(subject)
+            blast[query][subject] = score
+        
+            entry_set.add(query)
+            entry_set.add(subject)
+
+    else:
+        for line in in_fh:
+            if p.match(line):
+                continue
+            line = line.rstrip()
+        
+            query   = line.split('\t')[0]
+            subject = line.split('\t')[1]
+            score   = float(line.split('\t')[11])
+    
+            blast[query][subject] = score
+        
+            entry_set.add(query)
+            entry_set.add(subject)
     
 else:
     logger.info("Multi hit BLAST mode !!")
