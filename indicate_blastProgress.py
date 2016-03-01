@@ -18,20 +18,16 @@ with open(args.blast_inputfile, 'r') as bl_in_fh:
 pbar = ProgressBar(max_value=numentry,redirect_stderr=True)
 pbar.start()
 
-#先頭に#かあるがみて，そのなかでカウントする
 while True:
     with open(args.blast_outputfile, 'r') as bl_out_fh:
-        print("with")
-        lines = bl_in_fh.read()
+        lines = bl_out_fh.read()
         prog_numquery = lines.count('# Query: ')
-        print(prog_numquery)
 
         pbar.update(prog_numquery)
+        time.sleep(3)
 
-    if prog_numquery >= numentry:
-        print("break")
-        break
-
+        if prog_numquery >= numentry:
+            break
 
 pbar.finish()
         
