@@ -20,6 +20,8 @@ while True:
     with open(args.blast_outputfile, 'r') as bl_out_fh:
         lines = bl_in_fh.read()
         prog_numquery = lines.count('Query:')
+        print(prog_numquery)
+
         pbar.update(prog_numquery)
 
     if prog_numquery >= numentry:
