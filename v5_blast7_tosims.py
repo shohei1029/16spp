@@ -88,7 +88,7 @@ p = re.compile('#')
 if args.nomultihit == True:
     logger.info("No multi hit BLAST mode! :D")
     if args.cutoff_identity:
-        logger.info("cut off by % identity".format(args.cutoff_identity))
+        logger.info("cut off by % identity >= {}".format(args.cutoff_identity))
         for line in in_fh:
             if p.match(line):
                 continue
