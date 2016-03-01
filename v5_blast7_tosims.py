@@ -227,7 +227,7 @@ else: #1つのノードと接続しているエッジ数を限定する場合
 
             #暫定 (でも他に思いつかない)
             if i >= j and best[ic][jc] > edge_weight:
-                out_fh.write("{} {} {}\n".format(i,best[i][j],j)) #sif
+                out_fh.write("{} {} {}\n".format(i,j,best[i][j])) #sim
     logger.info("暫定システム")
     out_fh.close()
     quit()
@@ -241,7 +241,8 @@ else: #1つのノードと接続しているエッジ数を限定する場合
 for i in best.keys():
     for j in best[i].keys():
         if i >= j and best[i][j] > edge_weight:
-            out_fh.write("{} {} {}\n".format(i,best[i][j],j)) #sif
+            out_fh.write("{} {} {}\n".format(i,j,best[i][j])) #sim
+#            out_fh.write("{} {} {}\n".format(i,best[i][j],j)) #sif
 
 
 ##########
