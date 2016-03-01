@@ -14,8 +14,6 @@ with open(args.blast_inputfile, 'r') as bl_in_fh:
     lines = bl_in_fh.read()
     numentry = lines.count('>')
 
-quit()
-
 pbar = ProgressBar(max_value=numentry,redirect_stderr=True)
 pbar.start()
 while True:
