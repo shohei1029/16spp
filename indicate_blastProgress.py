@@ -5,6 +5,11 @@ import argparse
 
 from progressbar import ProgressBar
 
+#memo
+#for all-against-all BLAST
+#->全てのqueryがどっかしらにhitする前提
+#all-against-all以外でも使えるようにするには，queryとして使われた配列がinput fastaの何番目の配列かってのをみないといけない
+
 parser = argparse.ArgumentParser()
 parser.add_argument("-i","--blast_inputfile",type=str,help="Blast input file.")
 parser.add_argument("-o","--blast_outputfile",type=str,help="Blast output file.")

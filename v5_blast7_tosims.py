@@ -108,6 +108,7 @@ if args.nomultihit == True:
             entry_set.add(subject)
 
     else:
+        logger.info("no cut off by % identity")
         for line in in_fh:
             if p.match(line):
                 continue
