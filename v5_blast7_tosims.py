@@ -163,8 +163,9 @@ pbar.start()
 #mat[str][str]
 othererr = []
 pbar_count = 0
-for i in entry_list:
+for i in entry_list:  # i is str, not a number
     for j in entry_list:
+        logger.debug(i+"    "+j)
         ij=0.0; ji=0.0; ii=0.0; jj=0.0;
 
         try:
