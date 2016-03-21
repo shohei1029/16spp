@@ -10,6 +10,8 @@ from progressbar import ProgressBar
 #->全てのqueryがどっかしらにhitする前提
 #all-against-all以外でも使えるようにするには，queryとして使われた配列がinput fastaの何番目の配列かってのをみないといけない
 
+#毎回出力ファイルを最初から全部読むんじゃなくて，tail -f とか使って効率化していきたい
+
 parser = argparse.ArgumentParser()
 parser.add_argument("-i","--blast_inputfile",type=str,help="Blast input file.")
 parser.add_argument("-o","--blast_outputfile",type=str,help="Blast output file.")
@@ -24,7 +26,7 @@ pbar = ProgressBar(max_value=numentry,redirect_stderr=True)
 pbar.start()
 
 while True:
-    with open(args.blast_outputfile, 'r') as bl_out_fh:
+    with open(args.blast_outputfile, 'r') as bl_out_fh: 
         lines = bl_out_fh.read()
         prog_numquery = lines.count('# Query: ')
 

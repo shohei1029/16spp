@@ -33,7 +33,7 @@ start_time = time.time()
 
 # 16.3.1 BLAST idendityでのcutoffオプションの追加 #unix commandでやったほうが高速です
 
-#予定?
+#予定
 
 
 ###################

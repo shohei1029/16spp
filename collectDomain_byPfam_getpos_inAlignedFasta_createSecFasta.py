@@ -158,6 +158,15 @@ def make_domain_fasta(alnfasta_dict): #配列長，ドメインごとに揃え�
 # main() #
 ##########
 if __name__ == '__main__':
+
+    #2016.3.8 HXB2
+    outfa_fh = sys.stdout
+    seq_sec = {'Integrase': [1437, 1744], 'p51_RT': [862, 1316], 'Protease': [762, 861], 'p15': [1317, 1436]}  #Integraseは 1728→1744へ。（最後尾まで含めるため）
+    fa_d = read_fasta_todict("../data/removed-HXB2_mafft-linsi_with-HXB2_A,B,C_HIV-1-gM-noRs_pol-aa_v3.fasta")
+    make_seqsec_fasta(seq_sec, fa_d)
+    quit()
+
+
     outfa_fh = sys.stdout
     read_hmmscan_domtblout_todict(hmmscan_file)
     fa_d = read_fasta_todict(in_alnfasta)
