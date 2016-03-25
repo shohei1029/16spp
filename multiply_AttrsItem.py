@@ -7,7 +7,9 @@ import sys
 # 2016.3.4 by Shohei N.
 
 #hard coding
-variations = ["-int_sec", "-RT_sec", "-RNase_sec", "-prot_sec"] #including separators
+#variations = ["-int_sec", "-RT_sec", "-RNase_sec", "-prot_sec"] #including separators
+#variations = ["-Protease", "-p51_RT", "-p15", "-Integrase"] #including separators
+variations = ["-RVP", "-RVT_1", "-RVT_thumb", "-RVT_connect", "-RNase_H", "-Integrase_Zn", "-rve", "-IN_DBD_C"] #including separators
 
 if __name__ == '__main__':
     for line in sys.stdin:
