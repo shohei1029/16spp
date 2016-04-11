@@ -11,7 +11,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-
 # 2016.3.7
 # Shohei N.
 #
@@ -23,7 +22,8 @@ parser.add_argument("-d","--kde", type=bool, default=False, help="Whether to plo
 args = parser.parse_args()
 
 def plot_distplot(x, outfile="./out_plot_hist.png", b=args.bin, kde=args.kde):
-    sns.set(style="whitegrid")
+#    sns.set(style="whitegrid")
+    sns.set_style("whitegrid", {'grid.linestyle': '--'})
     fig, ax = plt.subplots(1, 1, figsize=(8,6)) #fig->figure obj. ax->graph obj. 2,1とかだとgは配列に.2,2だとarray.
     ax = sns.distplot(x, bins=b, kde=kde)
     fig.savefig(outfile, dpi=180)
@@ -36,4 +36,3 @@ if __name__ == '__main__':
         line = line.rstrip()
         l.append(float(line))
     plot_distplot(l)
-    
