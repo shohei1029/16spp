@@ -14,10 +14,10 @@ def cal_Dmean(dists, num_isolates):
     S = num_isolates
     return sum(dists) / (S*(S+1)/2)
 
-if __name__ == '__main__':
+def cal_Dmean_file(in_fh):
     dists = []
     ids = set()
-    for line in sys.stdin:
+    for line in in_fh:
         line = line.rstrip()
         id1, id2, sim = line.split(' ')
         dissim = 1 - float(sim)
@@ -34,3 +34,6 @@ if __name__ == '__main__':
         print("number of ids: ", num_isolates, file=sys.stdout)
         print("Variance of distance: ", variance, file=sys.stdout)
         print("Dmean: ", dmean, file=sys.stdout)
+
+if __name__ == '__main__':
+    cal_Dmean_file(sys.stdin)
