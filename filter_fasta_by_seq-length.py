@@ -48,6 +48,7 @@ if __name__ == '__main__':
     try:
         fastaobj = SeqIO.to_dict(SeqIO.parse(in_fh,"fasta"))
     except ValueError:
+        pass #これでDQ164129にgagが2つあることで発生するValueError: Duplicate key 'DQ164129|HIV-1|subtype:C|gag'を防げるのかはわからない。2こめのgagは無視してよい。
         
     
     seqlens_all = set()
