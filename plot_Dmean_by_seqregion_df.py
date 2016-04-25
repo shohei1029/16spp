@@ -11,6 +11,9 @@
 # Dmean 計算もseaborn側にさせる
 # ->すべてのエッジがsimファイルに書かれている前提。エッジカットがあると平均がちゃんと全配列間の平均にならない。
 
+# 2016.4.25
+# hard coding部分をなくし(argsのdefaultへ)，env等他タンパク質でも使えるように。
+
 
 import os
 import argparse
@@ -24,8 +27,10 @@ import seaborn as sns
 import cal_Dmean_by_sim
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-t", "--target_seqregion", type=str, help="target sequence region. sep=,")
+parser.add_argument("-t", "--target_seqregion", type=str, help="target sequence region. sep=,", default="RVP RVT_1 RVT_thumb RVT_connect RNase_H Integrase_Zn rve IN_DBD_C")
 parser.add_argument("-o", "--output_dir", type=str, default="../results/Dmean/pol-domains-HXB2-Pfam")
+parser.add_argument("-i", "--input_dir", type=str, default="../analysis/sim/pol-domains-HXB2-Pfam")
+parser.add_argument("-n", "--name_core", type=str, default="_pi0_blastp_1e-5_domains-HXB2-Pfam_A,B,C_HIV-1-gM-noRs_pol-aa_v3.txt")
 args = parser.parse_args()
 
 
@@ -72,10 +77,7 @@ def plot_Dmean_barplot(df, outfile='./out_barplot_Dmean.png'):
 
 
 if __name__ == '__main__':
-    if args.target_seqregion:
-        seqregions = args.target_seqregion.split(',')
-    else:
-        seqregions = "RVP RVT_1 RVT_thumb RVT_connect RNase_H Integrase_Zn rve IN_DBD_C".split(' ')
+    seqregions = args.target_seqregion.split(',')
 
     outdir = args.output_dir
     os.makedirs(outdir, exist_ok=True)
@@ -84,8 +86,8 @@ if __name__ == '__main__':
     out_file_box    = outdir + "/out_boxplot_Dmean.png"
     out_file_bar    = outdir + "/out_barplot_Dmean.png"
 
-    in_dir = "../analysis/sim/pol-domains-HXB2-Pfam/"
-    file_name_core = "_pi0_blastp_1e-5_domains-HXB2-Pfam_A,B,C_HIV-1-gM-noRs_pol-aa_v3.txt"
+    in_dir = args.input_dir
+    file_name_core = args.name_core
 
     dmeans = []
     variances = []
