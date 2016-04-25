@@ -92,7 +92,7 @@ if __name__ == '__main__':
     dmeans = []
     variances = []
     for seqre in seqregions:
-        in_file = in_dir + file_name_core.format(seqre)
+        in_file = in_dir + "/" +  file_name_core.format(seqre)
 
         print(in_file)
         in_fh = open(in_file, 'r')
