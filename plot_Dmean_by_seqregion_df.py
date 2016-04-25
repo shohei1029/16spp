@@ -27,10 +27,10 @@ import seaborn as sns
 import cal_Dmean_by_sim
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-t", "--target_seqregion", type=str, help="target sequence region. sep=,", default="RVP RVT_1 RVT_thumb RVT_connect RNase_H Integrase_Zn rve IN_DBD_C")
+parser.add_argument("-t", "--target_seqregion", type=str, help="target sequence region. sep=,", default="RVP,RVT_1,RVT_thumb,RVT_connect,RNase_H,Integrase_Zn,rve,IN_DBD_C")
 parser.add_argument("-o", "--output_dir", type=str, default="../results/Dmean/pol-domains-HXB2-Pfam")
 parser.add_argument("-i", "--input_dir", type=str, default="../analysis/sim/pol-domains-HXB2-Pfam")
-parser.add_argument("-n", "--name_core", type=str, default="_pi0_blastp_1e-5_domains-HXB2-Pfam_A,B,C_HIV-1-gM-noRs_pol-aa_v3.txt")
+parser.add_argument("-n", "--name_core", type=str, help="use {} instead of domain name.", default="{}_pi0_blastp_1e-5_domains-HXB2-Pfam_A,B,C_HIV-1-gM-noRs_pol-aa_v3.txt")
 args = parser.parse_args()
 
 
@@ -92,7 +92,7 @@ if __name__ == '__main__':
     dmeans = []
     variances = []
     for seqre in seqregions:
-        in_file = in_dir + seqre + file_name_core
+        in_file = in_dir + file_name_core.format(seqre)
 
         print(in_file)
         in_fh = open(in_file, 'r')
