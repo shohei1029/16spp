@@ -11,6 +11,10 @@ from Bio import SeqIO
 # 2016.4.9
 #  created file based on filter_fasta_seq.py
 #  stdin -> stdout (default)
+# 2016.4.13
+#  fastaをdictとして読み込む時の，ValueError: Duplicate key 'DQ164129|HIV-1|subtype:C|gag'への対処(例外処理)
+#  ->同じIDがあるときは2個め無視！その分配列数減るので注意！
+#(まだしてない↑)
 
 #memo
 #基準とする配列長の指定%未満の配列を取り除いて出力する。
@@ -41,7 +45,10 @@ if __name__ == '__main__':
         out_fh = sys.stdout
     
 
-    fastaobj = SeqIO.to_dict(SeqIO.parse(in_fh,"fasta"))
+    try:
+        fastaobj = SeqIO.to_dict(SeqIO.parse(in_fh,"fasta"))
+    except ValueError:
+        
     
     seqlens_all = set()
     seqlens_filterd = set()

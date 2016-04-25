@@ -28,12 +28,30 @@ def cal_Dmean_file(in_fh):
     variance = statistics.variance(dists)
     dmean = cal_Dmean(dists, num_isolates)
 
+    return dmean
+
+def cal_Dmean_var_file(in_fh):
+    dists = []
+    ids = set()
+    for line in in_fh:
+        line = line.rstrip()
+        id1, id2, sim = line.split(' ')
+        dissim = 1 - float(sim)
+        dists.append(dissim)
+        ids.add(id1)
+    
+    num_isolates = len(ids)
+    variance = statistics.variance(dists)
+    dmean = cal_Dmean(dists, num_isolates)
+
+    return dmean, variance
+
+if __name__ == '__main__':
+    dmean, variance = cal_Dmean_var_file(sys.stdin)
+
     if sys.argv:
         sys.stdout.write(str(dmean))
     else:
         print("number of ids: ", num_isolates, file=sys.stdout)
         print("Variance of distance: ", variance, file=sys.stdout)
         print("Dmean: ", dmean, file=sys.stdout)
-
-if __name__ == '__main__':
-    cal_Dmean_file(sys.stdin)
