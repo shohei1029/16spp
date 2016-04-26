@@ -117,7 +117,7 @@ def get_geneaa_byacc_tofasta(gbfile,output_fasta,acc_list):
                                         geneaa = seq_feature.qualifiers["product"][0],
                                         seq = seq_feature.qualifiers["translation"][0]))
                                     except KeyError as err:
-                                        logger.warn("No 'product' translation!" + err )
+                                        logger.warn("No 'product' translation!" + str(err) + " @" + seq_record.id)
                             else:
                                 logger.info("No {} aa sequence in this CDS part.".format(target_gene_aa) + seq_record.id)
                     if flag == False: 
