@@ -1,4 +1,6 @@
 # 16spp
+from spring of 2016 
 
-###
-コード内に強いハードコーディング領域を含む場合，スクリプト名前に日付をつける.
+private scripts written by S.N.
+
+
