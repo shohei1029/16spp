@@ -22,7 +22,7 @@ def random_sample_fasta(fa_d, n):
         fa_sampled_d.update({seq[0]: seq[1]})
     return fa_sampled_d
 
-def write_fasta_seqio_list(fa_d, out_fh=sys.stdout):
+def write_fasta_seqio_list(fa_d, out_fh=sys.stdout): 
     for seqobj in fa_d.values():
         out_fh.write(">{}\n{}\n".format(seqobj.id, seqobj.seq))
 
