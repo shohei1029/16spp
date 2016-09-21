@@ -74,6 +74,8 @@ class CalcPlotCRE(object):
         if self.toml_file:
             self.annopos_d = sn_utils.read_tomlfile(self.toml_file)
 
+        self.cre_z_region = dict()
+
     def parse_gs_file_gen_gs(self, gsf):
         with open(gsf, 'r') as fh:
             for line in fh:
@@ -191,19 +193,55 @@ class CalcPlotCRE(object):
         self.cre = sum(kld_l)
         self.cre_z = normalize_array(self.cre)
 
-    def extract_high_pos(self, cre_z_thres=3.0): #書籍&元論文では3.0
-        highposs = np.where(self.cre_z >= cre_z_thres)
-        for name, pos_l in self.annopos_d.items():
-            highposs_within = highposs[0][np.where( (pos_l[0] <= highposs[0]) & (highposs[0] <= pos_l[1]) )] 
-            if len(highposs_within) != 0:
-                print("CRE (Z-score) >= {} @ {}".format(cre_z_thres, name), highposs_within)
+    def calc_CRE_Z_region(self, region_name: str):
+        def normalize_array_region(array, start_pos: int, end_pos: int):
+            '''
+            指定領域内で平均と標準偏差を計算し，Z-scoresを算出する．
+            arrayの長さは維持されるが，指定領域外のZ-scoreは使用してはならない．
+            '''
+            region_array = array[start_pos:end_pos+1]
+            mu = np.mean(region_array)
+            std = np.std(region_array)
+            z = (array - mu) / std
+            return z
 
-    def extract_high_pos_local(self, cre_z_thres=3.0): #書籍&元論文では3.0
+        for name, pos_l in self.annopos_d.items():
+            if name == region_name:
+                cre_z_region = normalize_array_region(self.cre, pos_l[0], pos_l[1])
+                self.cre_z_region.update({region_name: cre_z_region})
+
+    def extract_high_pos(self, cre_z_thres=3.0, local=False): #書籍&元論文では3.0, True: 領域内における位置にしてから出力する
         highposs = np.where(self.cre_z >= cre_z_thres)
         for name, pos_l in self.annopos_d.items():
-            highposs_within = highposs[0][np.where( (pos_l[0] <= highposs[0]) & (highposs[0] <= pos_l[1]) )] -pos_l[0]+1
-            if len(highposs_within) != 0:
-                print("CRE (Z-score) >= {} @@ {}".format(cre_z_thres, name), highposs_within)
+            if local:
+                highposs_within = highposs[0][np.where( (pos_l[0] <= highposs[0]) & (highposs[0] <= pos_l[1]) )] -pos_l[0]+1
+                if len(highposs_within) != 0:
+                    print("CRE (Z-score) >= {} @@ {}".format(cre_z_thres, name), highposs_within)
+            else:
+                highposs_within = highposs[0][np.where( (pos_l[0] <= highposs[0]) & (highposs[0] <= pos_l[1]) )] 
+                if len(highposs_within) != 0:
+                    print("CRE (Z-score) >= {} @ {}".format(cre_z_thres, name), highposs_within)
+
+    def extract_high_pos_region(self, region_name, cre_z_thres=3.0, local=False): #書籍&元論文では3.0, True: 領域内における位置にしてから出力する
+        highposs = np.where(self.cre_z_region[region_name] >= cre_z_thres)
+        for name, pos_l in self.annopos_d.items():
+            if name == region_name:
+                if local:
+                    highposs_within = highposs[0][np.where( (pos_l[0] <= highposs[0]) & (highposs[0] <= pos_l[1]) )] -pos_l[0]+1
+                    if len(highposs_within) != 0:
+                        print("CRE (Z-score) >= {} only @@ {}".format(cre_z_thres, name), highposs_within)
+                else:
+                    highposs_within = highposs[0][np.where( (pos_l[0] <= highposs[0]) & (highposs[0] <= pos_l[1]) )] 
+                    if len(highposs_within) != 0:
+                        print("CRE (Z-score) >= {} only @ {}".format(cre_z_thres, name), highposs_within)
+
+## deprecated
+#    def extract_high_pos_local(self, cre_z_thres=3.0): #領域内における位置にしてから出力する
+#        highposs = np.where(self.cre_z >= cre_z_thres)
+#        for name, pos_l in self.annopos_d.items():
+#            highposs_within = highposs[0][np.where( (pos_l[0] <= highposs[0]) & (highposs[0] <= pos_l[1]) )] -pos_l[0]+1
+#            if len(highposs_within) != 0:
+#                print("CRE (Z-score) >= {} @@ {}".format(cre_z_thres, name), highposs_within)
     
     def plot_nparray_with_annopos(self, array, annopos_d, outfile="./out_CRE_annopos.png", ylabel="Cumulative relative entropy", width=8):
         #plot setting
@@ -256,14 +294,19 @@ if __name__ == "__main__":
     test.prep_data()
 #    test.run_hmmbuild()
     test.calc_CRE_from_hmm()
-    test.extract_high_pos(3.0)
-    test.extract_high_pos(1.5)
-    test.extract_high_pos(1.0)
-    test.extract_high_pos_local(3.0)
-    test.extract_high_pos_local(1.5)
-    test.extract_high_pos_local(1.0)
+#J    test.extract_high_pos(3.0)
+#J    test.extract_high_pos(1.5)
+#J    test.extract_high_pos(1.0)
+#J    test.extract_high_pos(3.0, local=True)
+#J    test.extract_high_pos(1.5, local=True)
+#J    test.extract_high_pos(1.0, local=True)
 #    test.plot()
 #    test.plot_wide()
+
+    test.calc_CRE_Z_region("RVT_connect")
+    test.calc_CRE_Z_region("RNase_H")
+    test.extract_high_pos_region("RVT_connect")
+    test.extract_high_pos_region("RNase_H")
 
 #    ws = 50
 #    plot_nparray_with_annopos(cre, annopos_d, outfile="{wd}/out_CRE_annopos.png".format(wd=workdir))
