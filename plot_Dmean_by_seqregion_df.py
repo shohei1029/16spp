@@ -47,7 +47,7 @@ def parse_edge_weight(in_fh):
 
 def plot_Dmean_violinplot(df, outfile='./out_violinplot_Dmean.png'):
 #    sns.set(style="whitegrid")
-    sns.set_style("whitegrid", {'grid.linestyle': '--'})
+#    sns.set_style("whitegrid", {'grid.linestyle': '--'})
     fig, ax = plt.subplots(1, 1, figsize=(8,6)) #fig->figure obj. ax->graph obj. 2,1とかだとgは配列に.2,2だとarray.
     ax = sns.violinplot(x='seq_region', y='distance', data=df)
     plt.xlabel('sequence region')
@@ -57,7 +57,7 @@ def plot_Dmean_violinplot(df, outfile='./out_violinplot_Dmean.png'):
 
 def plot_Dmean_boxplot(df, outfile='./out_boxplot_Dmean.png'):
 #    sns.set(style="whitegrid")
-    sns.set_style("whitegrid", {'grid.linestyle': '--'})
+#    sns.set_style("whitegrid", {'grid.linestyle': '--'})
     fig, ax = plt.subplots(1, 1, figsize=(8,6)) #fig->figure obj. ax->graph obj. 2,1とかだとgは配列に.2,2だとarray.
     ax = sns.boxplot(x='seq_region', y='distance', data=df)
     plt.xlabel('sequence region')
@@ -66,8 +66,8 @@ def plot_Dmean_boxplot(df, outfile='./out_boxplot_Dmean.png'):
     sns.plt.close()
 
 def plot_Dmean_barplot(df, outfile='./out_barplot_Dmean.png'):
-#    sns.set(style="whitegrid")
-    sns.set_style("whitegrid", {'grid.linestyle': '--'})
+#   sns.set(style="whitegrid")
+#    sns.set_style("whitegrid", {'grid.linestyle': '--'})
     fig, ax = plt.subplots(1, 1, figsize=(8,6)) #fig->figure obj. ax->graph obj. 2,1とかだとgは配列に.2,2だとarray.
     ax = sns.barplot(x='seq_region', y='distance', data=df)
     plt.xlabel('sequence region')
@@ -102,6 +102,11 @@ if __name__ == '__main__':
             df = df.append(pd.DataFrame({'seq_region':[seqre]*len(dists), 'distance':dists}))
         except NameError:
             df = pd.DataFrame({'seq_region':[seqre]*len(dists), 'distance':dists})
+
+    #plot style
+    sns.set("poster", "whitegrid", font_scale=2, rc={'grid.linestyle': '--'})
+    colors = ["black"]*8
+    sns.set_palette(sns.xkcd_palette(colors)) #black and white style
 
     plot_Dmean_violinplot(df, out_file_violin)
     plot_Dmean_boxplot(df, out_file_box)

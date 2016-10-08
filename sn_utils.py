@@ -79,6 +79,62 @@ def seqrcds_to_ordereddict(sequences, key_function=None):  #modified to return a
         d[key] = record 
     return d 
 
+
+def cprint(string, color, highlight=False):
+    """
+    Colored print
+    colors:
+        red,green,yellow,blue,magenta,cyan,white,crimson
+
+    #冗長につき改良の余地大
+    """
+    end="\033[1;m"
+    pstr=""
+    if color == "red":
+        if highlight:
+            pstr+='\033[1;41m'
+        else:
+            pstr+='\033[1;31m'
+    elif color == "green":
+        if highlight:
+            pstr+='\033[1;42m'
+        else:
+            pstr+='\033[1;32m'
+    elif color == "yellow":
+        if highlight:
+            pstr+='\033[1;43m'
+        else:
+            pstr+='\033[1;33m'
+    elif color == "blue":
+        if highlight:
+            pstr+='\033[1;44m'
+        else:
+            pstr+='\033[1;34m'
+    elif color == "magenta":
+        if highlight:
+            pstr+='\033[1;45m'
+        else:
+            pstr+='\033[1;35m'
+    elif color == "cyan":
+        if highlight:
+            pstr+='\033[1;46m'
+        else:
+            pstr+='\033[1;36m'
+    elif color == "white":
+        if highlight:
+            pstr+='\033[1;47m'
+        else:
+            pstr+='\033[1;37m'
+    elif color == "crimson":
+        if highlight:
+            pstr+='\033[1;48m'
+        else:
+            pstr+='\033[1;38m'
+    else:
+        print("Error Unsupported color:"+color)
+
+    print(pstr+string+end)
+
 def draw_annopos(ax, anno_dict, rows=3, readingframe=False, fs=9):
     """
     anno_dict = {name:[start,end]}

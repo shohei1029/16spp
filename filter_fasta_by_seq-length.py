@@ -14,7 +14,10 @@ from Bio import SeqIO
 # 2016.4.13
 #  fastaをdictとして読み込む時の，ValueError: Duplicate key 'DQ164129|HIV-1|subtype:C|gag'への対処(例外処理)
 #  ->同じIDがあるときは2個め無視！その分配列数減るので注意！
-#(まだしてない↑)
+# とりまエラーでたらpassするだけ。。
+# 2016.4.26
+# SeqIO.to_dict()使うのやめて，SeqIO.parseやってforでどんどんdictへ自分で追加してく。
+# 同一タンパクが2個紛れ込んでいたりする奴，今のところ2例。DQ16412のgagと，9AF290028のtat(これ絶対アノテーションミス。geneがtatで，productがvpu proteinになってるもの。。)
 
 #memo
 #基準とする配列長の指定%未満の配列を取り除いて出力する。
@@ -44,13 +47,17 @@ if __name__ == '__main__':
     else:
         out_fh = sys.stdout
     
+#    try:
+#        fastaobj = SeqIO.to_dict(SeqIO.parse(in_fh,"fasta"))
+#    except ValueError:
+#        pass #これでDQ164129にgagが2つあることで発生するValueError: Duplicate key 'DQ164129|HIV-1|subtype:C|gag'を防げるのかはわからない。ちなむと2こめのgagは無視してよい。
+#        #防げなかった。↓下の奴にする。
 
-    try:
-        fastaobj = SeqIO.to_dict(SeqIO.parse(in_fh,"fasta"))
-    except ValueError:
-        pass #これでDQ164129にgagが2つあることで発生するValueError: Duplicate key 'DQ164129|HIV-1|subtype:C|gag'を防げるのかはわからない。2こめのgagは無視してよい。
-        
-    
+    fastaobj = dict()
+    for seqrcd in SeqIO.parse(in_fh,"fasta"):
+        if seqrcd.id not in fastaobj: #2個目が入ってたりする。1個目のほうがちゃんとしたデータだと信じてる。(n=2)
+            fastaobj.update({seqrcd.id: seqrcd})
+
     seqlens_all = set()
     seqlens_filterd = set()
     cri_len = args.ref_seq_length * args.criteria

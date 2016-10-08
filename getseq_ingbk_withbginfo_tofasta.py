@@ -21,6 +21,9 @@ logger.addHandler(handler)
 # modified
 # 出力fastaのheaderにgene nameがついているのはそのままにする。配列長filteringするスクリプトを作って，そこで遺伝子名除去もやる
 
+# 2016.6.11
+# add exclude_subtypes opton: mode -o only. If you want exclude some groups/subtypes in HIV-1 or 2..
+
 
 ###################
 # Argument Parser #
@@ -29,8 +32,9 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-o", "--organism", default="HIV-1", type=str, help="HIV-1,HIV-2,SIV", choices=["HIV-1","HIV-2","SIV"])
 #parser.add_argument("-t", "--target", type=str, help="What kind of data do you want to  get?", choices=["Patient_code","Accession","Subtype","Country","SamplingYear","Seq_Length"])
 parser.add_argument("-t", "--target_gene", default="env", type=str, help="target gene/protein name")
-parser.add_argument("-s", "--target_subtypes", type=str, help="target groups/subtypes. sep=, . ex. A1,A2,B,C ..")
-parser.add_argument("-m", "--mode", default="n", choices=["c","s","r","n"], help="c:get seqs which have Country information, s:specify Subtypes")
+parser.add_argument("-s", "--target_subtypes", type=str, help="target groups/subtypes. sep=, . ex. A1,A2,B,C .., mode -o only")
+parser.add_argument("-e", "--exclude_subtypes", type=str, help="exclude groups/subtypes. sep=, . ex. A1,A2,B,C ..")
+parser.add_argument("-m", "--mode", default="n", choices=["c","s","o","r","n"], help="c:get seqs which have Country information, s:specify Subtypes")
 args = parser.parse_args()
 ###################
 
@@ -42,7 +46,8 @@ if args.target_subtypes:
     target_subtypes = set(args.target_subtypes.split(","))
 else:
     target_subtypes = set(["A1","A2","B","C","D","F1","F2","G","H","J","K","N","O","P","U","A"]) #HIV-1,HIV-2 except recombinants
-#random_seq_num = 60
+
+exclude_subtypes = set(args.exclude_subtypes.split(","))
 
 
 #############
@@ -175,6 +180,15 @@ if args.mode == "s":
 #        gb_acc = [d["Accession"] for d in database_dic.values() if d["Subtype"] in target_subtypes and d['Organism'] != "FIV"]   #HIVのみを前提とする
         gb_acc = {d["Accession"] for d in database_dic.values() if d["Subtype"] in target_subtypes }   #HIVのみを前提とする
         opengb_recursively(gb_acc)
+
+if args.mode == "o":
+    logger.info("Specify Organisms")
+    if args.exclude_subtypes: 
+        logger.info("Exclude groups/subtype submode.")
+        gb_acc = {d["Accession"] for d in database_dic.values() if d['Organism'] == args.organism and d["Subtype"] not in exclude_subtypes} 
+    else:
+        gb_acc = {d["Accession"] for d in database_dic.values() if d['Organism'] == args.organism } 
+    opengb_recursively(gb_acc)
 
 #多すぎるSbutypeからは50くらいランダムでもってくる
 subtypes_source=defaultdict(lambda: defaultdict(set)) 

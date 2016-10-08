@@ -9,6 +9,7 @@ from progressbar import ProgressBar
 #for all-against-all BLAST
 #->全てのqueryがどっかしらにhitする前提
 #all-against-all以外でも使えるようにするには，queryとして使われた配列がinput fastaの何番目の配列かってのをみないといけない
+#  全部のqueryがどっかにhitするわけじゃないから。
 
 #毎回出力ファイルを最初から全部読むんじゃなくて，tail -f とか使って効率化していきたい
 

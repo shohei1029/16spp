@@ -305,8 +305,14 @@ if __name__ == "__main__":
 
     test.calc_CRE_Z_region("RVT_connect")
     test.calc_CRE_Z_region("RNase_H")
-    test.extract_high_pos_region("RVT_connect")
-    test.extract_high_pos_region("RNase_H")
+    test.extract_high_pos_region("RVT_connect", 3.0)
+    test.extract_high_pos_region("RNase_H", 3.0)
+    test.extract_high_pos_region("RVT_connect", 2.0)
+    test.extract_high_pos_region("RNase_H", 2.0)
+    test.extract_high_pos_region("RVT_connect", 3.0, local=True)
+    test.extract_high_pos_region("RNase_H", 3.0, local=True)
+    test.extract_high_pos_region("RVT_connect", 2.0, local=True)
+    test.extract_high_pos_region("RNase_H", 2.0, local=True)
 
 #    ws = 50
 #    plot_nparray_with_annopos(cre, annopos_d, outfile="{wd}/out_CRE_annopos.png".format(wd=workdir))

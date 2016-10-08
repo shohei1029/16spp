@@ -19,6 +19,8 @@ from iterm2_tools import images
 #
 # sys.stdinになんかのリスト流し込むとヒストグラムにして出力してくれる。おわり。
 
+#たぶん未完成
+
 parser = argparse.ArgumentParser()
 parser.add_argument("-b","--bin", type=int, help="bin of histgram (int)")
 parser.add_argument("-d","--kde", type=bool, default=False, help="Whether to plot a gaussian kernel density estimate.")
