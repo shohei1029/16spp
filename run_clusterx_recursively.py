@@ -89,28 +89,24 @@ def run_clusterx(input_file, output_dir, num_clusters):
         time.sleep(20)
 #        print(cmd)
 
-def run_cmd(cmd):
-    subprocess.call(cmd, shell=True)
-
-def run_clusterx_mp(input_file, output_dir, num_clusters, num_proc):
-    input_file_only = input_file.split('/')[-1]
-    cmd_l = []
-    if '-' in str(num_clusters):
-        cl_range_start = int(num_clusters.split('-')[0])
-        cl_range_end = int(num_clusters.split('-')[1])
-        for i in range(cl_range_start, cl_range_end):
+def pre_run_clusterx_for_mp(output_dir, num_clusters):
+    def run_clusterx_for_mp(input_file):
+        input_file_only = input_file.split('/')[-1]
+        if '-' in str(num_clusters):
+            cl_range_start = int(num_clusters.split('-')[0])
+            cl_range_end = int(num_clusters.split('-')[1])
+            for i in range(cl_range_start, cl_range_end):
+                cmd = "clusterx -c {c} -o {dir}/scps-c{c}_{fn} {inf}".format(c=i,dir=output_dir,fn=input_file_only,inf=input_file)
+#                subprocess.call(cmd, shell=True)
+                print(cmd)
+        else:
+            i = int(num_clusters)
             cmd = "clusterx -c {c} -o {dir}/scps-c{c}_{fn} {inf}".format(c=i,dir=output_dir,fn=input_file_only,inf=input_file)
-            cmd_l.append(cmd)
-    else:
-        i = int(num_clusters)
-        cmd = "clusterx -c {c} -o {dir}/scps-c{c}_{fn} {inf}".format(c=i,dir=output_dir,fn=input_file_only,inf=input_file)
-        cmd_l.append(cmd)
+#            subprocess.call(cmd, shell=True)
+            print(cmd)
 
-    pool = mp.Pool(num_proc)
-    outs = pool.map(run_cmd, cmd_l)
-    return outs
+    return run_clusterx_for_mp
 
-    #funcをつかう
 
 if __name__ == '__main__':
     files = list(find_all_files(args.input_dir))
@@ -122,10 +118,17 @@ if __name__ == '__main__':
     output_dir = "../analysis/clusterx/{}".format(args.input_dir.rstrip('/').split('/')[-1])
     os.makedirs(output_dir, exist_ok=True)
 
-    for simfile in files_sim:
+##   not mp
+#    for simfile in files_sim:
 #        run_clusterx(simfile, output_dir, args.num_clusters)
 
-        #multiprocessing
-        num_proc = mp.cpu_count()
-        run_clusterx_mp(simfile, output_dir, args.num_clusters, num_proc)
+    #multiprocessing
+    num_proc = mp.cpu_count()
+    run_cmd = pre_run_clusterx_for_mp(output_dir, args.num_clusters)
 
+    def run_hardcoding_func(arg):
+        run_cmd(arg)
+
+    pool = mp.Pool(num_proc)
+    print("# of proc:",num_proc)
+    outs = pool.map(run_hardcoding_func, files_sim)
