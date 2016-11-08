@@ -97,12 +97,12 @@ def pre_run_clusterx_for_mp(output_dir, num_clusters):
             cl_range_end = int(num_clusters.split('-')[1])
             for i in range(cl_range_start, cl_range_end):
                 cmd = "clusterx -c {c} -o {dir}/scps-c{c}_{fn} {inf}".format(c=i,dir=output_dir,fn=input_file_only,inf=input_file)
-#                subprocess.call(cmd, shell=True)
+                subprocess.call(cmd, shell=True)
                 print(cmd)
         else:
             i = int(num_clusters)
             cmd = "clusterx -c {c} -o {dir}/scps-c{c}_{fn} {inf}".format(c=i,dir=output_dir,fn=input_file_only,inf=input_file)
-#            subprocess.call(cmd, shell=True)
+            subprocess.call(cmd, shell=True)
             print(cmd)
 
     return run_clusterx_for_mp
