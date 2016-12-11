@@ -52,7 +52,8 @@ def is_target(file_path):
 #関数外に切り離したい。が，filter()使うときに関数に対象リスト以外の引数を与える方法がわからない。
     t_doms = "RVP RVT_1 RVT_thumb RVT_connect RNase_H Integrase_Zn rve IN_DBD_C".split(' ')
     #t_pis_num = list(range(65,85)) #2016.11.07
-    t_pis_num = list(range(1,65)) #2016.11.08
+    #t_pis_num = list(range(1,65)) #2016.11.08
+    t_pis_num = list(range(96,100)) #2016.11.09
     t_pis = ['pi'+str(x) for x in t_pis_num]
     target_elems = [t_doms, t_pis]
 #
