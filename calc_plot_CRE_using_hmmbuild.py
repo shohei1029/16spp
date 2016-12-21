@@ -210,6 +210,26 @@ class CalcPlotCRE(object):
                 cre_z_region = normalize_array_region(self.cre, pos_l[0], pos_l[1])
                 self.cre_z_region.update({region_name: cre_z_region})
 
+    def calc_mean_CRE_by_region(self):
+        '''
+        領域ごとのCRE平均値を計算して返す。 #print
+        '''
+        for region_name, pos_l in self.annopos_d.items():
+            region_array = self.cre[pos_l[0]:pos_l[1]+1]
+            region_mu = np.mean(region_array)
+            print(region_name, region_mu) #temp?
+
+    def calc_mean_CRE_Z_by_region(self):
+        '''
+        領域ごとのCRE Z-score 平均値を計算して返す。 #print
+        # これでよいのかまだわからん
+        '''
+        cre_z = normalize_array(self.cre)
+        for region_name, pos_l in self.annopos_d.items():
+            region_array = cre_z[pos_l[0]:pos_l[1]+1]
+            region_mu = np.mean(region_array)
+            print(region_name, region_mu) #temp?
+
     def extract_high_pos(self, cre_z_thres=3.0, local=False): #書籍&元論文では3.0, True: 領域内における位置にしてから出力する
         highposs = np.where(self.cre_z >= cre_z_thres)
         for name, pos_l in self.annopos_d.items():
@@ -278,7 +298,6 @@ class CalcPlotCRE(object):
 
     def plot_wide(self):
         self.plot_nparray_with_annopos(self.cre_z, self.annopos_d, outfile="{wd}/out_CREz_annopos_wide.png".format(wd=self.workdir), ylabel="CRE (Z-score)", width=50)
-        
 
 
 if __name__ == "__main__":
@@ -303,16 +322,21 @@ if __name__ == "__main__":
 #    test.plot()
 #    test.plot_wide()
 
-    test.calc_CRE_Z_region("RVT_connect")
-    test.calc_CRE_Z_region("RNase_H")
-    test.extract_high_pos_region("RVT_connect", 3.0)
-    test.extract_high_pos_region("RNase_H", 3.0)
-    test.extract_high_pos_region("RVT_connect", 2.0)
-    test.extract_high_pos_region("RNase_H", 2.0)
-    test.extract_high_pos_region("RVT_connect", 3.0, local=True)
-    test.extract_high_pos_region("RNase_H", 3.0, local=True)
-    test.extract_high_pos_region("RVT_connect", 2.0, local=True)
-    test.extract_high_pos_region("RNase_H", 2.0, local=True)
+#    #領域ごとにCRE_Z
+#    test.calc_CRE_Z_region("RVT_connect")
+#    test.calc_CRE_Z_region("RNase_H")
+#    test.extract_high_pos_region("RVT_connect", 3.0)
+#    test.extract_high_pos_region("RNase_H", 3.0)
+#    test.extract_high_pos_region("RVT_connect", 2.0)
+#    test.extract_high_pos_region("RNase_H", 2.0)
+#    test.extract_high_pos_region("RVT_connect", 3.0, local=True)
+#    test.extract_high_pos_region("RNase_H", 3.0, local=True)
+#    test.extract_high_pos_region("RVT_connect", 2.0, local=True)
+#    test.extract_high_pos_region("RNase_H", 2.0, local=True)
+
+    #16.12.12
+#    test.calc_mean_CRE_by_region()
+    test.calc_mean_CRE_Z_by_region()
 
 #    ws = 50
 #    plot_nparray_with_annopos(cre, annopos_d, outfile="{wd}/out_CRE_annopos.png".format(wd=workdir))
