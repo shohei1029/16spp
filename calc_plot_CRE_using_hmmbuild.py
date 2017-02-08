@@ -25,6 +25,11 @@ np.set_printoptions(threshold=np.nan)
 # 2016.9.6
 # class化
 
+# 2017.1.26
+# 領域ごとのCRE dfをcsvとして出力する箇所追加。workdir内に出力する.
+# barplot_mean_sd_CRE_by_region() 内に。通常はコメントアウト
+
+
 
 # 作業メモ
 # ../analysis/CRE/内にディレクトリを作成,fastaファイル名をもとに？
@@ -60,6 +65,18 @@ def smooth_array(array, window_size, min_valid_fraction=0.30):
     ma_array = np.ma.array(array)
     smoothed_divergence = sn_utils.running_average_masked(ma_array, window_size, min_valid_fraction=min_valid_fraction)
     return smoothed_divergence
+
+def plot_distplot(x, outfile, xlabel="", ylabel="", title=""):
+    fig, ax = plt.subplots(1, 1, figsize=(8,6.4)) #fig->figure obj. ax->graph obj. 2,1とかだとgは配列に.2,2だとarray.
+    ax = sns.distplot(x)
+
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    ax.set(title=title)
+
+    fig.savefig(outfile, dpi=300)
+    sns.plt.close()
+    print("saved as", outfile)
 
 
 class CalcPlotCRE(object):
@@ -219,6 +236,49 @@ class CalcPlotCRE(object):
             region_mu = np.mean(region_array)
             print(region_name, region_mu) #temp?
 
+    def barplot_mean_sd_CRE_by_region(self, plot_type='barplot', is_distplot_region=False, outfile="./out_CRE_region.png", order=None):
+        '''
+        領域ごとのCRE平均値とSDを計算してbarplotする
+        ついでに領域ごとのhistogramも出力する.
+        '''
+        import pandas as pd
+        cre_df = pd.DataFrame(index=None, columns=[])
+        for region_name, pos_l in self.annopos_d.items():
+            region_array = self.cre[pos_l[0]:pos_l[1]+1]
+            cre_df = cre_df.append(pd.DataFrame({'CRE': region_array, 'region_name': region_name}))
+            #plot 領域ごとのCREの分布
+            if is_distplot_region:
+                plot_distplot(region_array, \
+                              outfile="{wd}/out_CRE_hist_region_{region}.png".format(wd=self.workdir,region=region_name), \
+                              xlabel="CRE", \
+                              title=region_name)
+
+        #output as csv
+        #cre_df.to_csv("{}/CRE_region_array.csv".format(self.workdir)); quit()
+
+        #plot
+        sns.set('poster', 'whitegrid', 'dark', font_scale=0.8,
+                rc={"lines.linewidth": 1.5, 'grid.linestyle': '--'})
+        fig, ax = plt.subplots(1, 1, figsize=(8,6.4)) #fig->figure obj. ax->graph obj. 2,1とかだとgは配列に.2,2だとarray.
+
+        if plot_type == 'barplot':
+            ax = sns.barplot(x='region_name', y='CRE', data=cre_df, order=order, color='paleturquoise')
+        if plot_type == 'barplot-median':
+            ax = sns.barplot(x='region_name', y='CRE', data=cre_df, order=order, estimator=np.median, color='paleturquoise')
+        elif plot_type == 'boxplot':
+            ax = sns.boxplot(x='region_name', y='CRE', data=cre_df, order=order, color='paleturquoise')
+        elif plot_type == 'violinplot':
+            ax = sns.violinplot(x='region_name', y='CRE', data=cre_df, order=order, color='paleturquoise')
+        else: #とりあえず棒グラフでwww
+            ax = sns.barplot(x='region_name', y='CRE', data=cre_df, order=order, color='paleturquoise')
+
+        plt.xlabel("region name", fontsize=20)
+        plt.ylabel("CRE", fontsize=20)
+
+        outfile=outfile.format(wd=self.workdir)
+        fig.savefig(outfile, dpi=300)
+        sns.plt.close()
+
     def calc_mean_CRE_Z_by_region(self):
         '''
         領域ごとのCRE Z-score 平均値を計算して返す。 #print
@@ -336,7 +396,13 @@ if __name__ == "__main__":
 
     #16.12.12
 #    test.calc_mean_CRE_by_region()
-    test.calc_mean_CRE_Z_by_region()
+#    test.calc_mean_CRE_Z_by_region()
+
+    #17.1.16
+    test.barplot_mean_sd_CRE_by_region(plot_type='barplot', is_distplot_region=True, outfile="{wd}/out_CRE_region_barplot.png", order=["RVP", "RVT_1", "RVT_thumb", "RVT_connect", "RNase_H", "Integrase_Zn", "rve", "IN_DBD_C"])
+#    test.barplot_mean_sd_CRE_by_region(plot_type='barplot-median', outfile="{wd}/out_CRE_region_barplot-median.png", order=["RVP", "RVT_1", "RVT_thumb", "RVT_connect", "RNase_H", "Integrase_Zn", "rve", "IN_DBD_C"])
+#    test.barplot_mean_sd_CRE_by_region(plot_type='boxplot', outfile="{wd}/out_CRE_region_boxplot.png", order=["RVP", "RVT_1", "RVT_thumb", "RVT_connect", "RNase_H", "Integrase_Zn", "rve", "IN_DBD_C"])
+#    test.barplot_mean_sd_CRE_by_region(plot_type='violinplot', outfile="{wd}/out_CRE_region_violinplot.png", order=["RVP", "RVT_1", "RVT_thumb", "RVT_connect", "RNase_H", "Integrase_Zn", "rve", "IN_DBD_C"])
 
 #    ws = 50
 #    plot_nparray_with_annopos(cre, annopos_d, outfile="{wd}/out_CRE_annopos.png".format(wd=workdir))
