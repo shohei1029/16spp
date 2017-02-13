@@ -211,11 +211,12 @@ class CalcPlotCRE(object):
         self.cre = sum(kld_l)
         self.cre_z = normalize_array(self.cre)
 
-    def calc_CRE_Z_region(self, region_name: str):
+    def calc_CRE_Z_region(self):
         def normalize_array_region(array, start_pos: int, end_pos: int):
             '''
             指定領域内で平均と標準偏差を計算し，Z-scoresを算出する．
             arrayの長さは維持されるが，指定領域外のZ-scoreは使用してはならない．
+            # 2017.2.13に仕様変更. 計算する領域を指定するのではなく全領域を計算するように。
             '''
             region_array = array[start_pos:end_pos+1]
             mu = np.mean(region_array)
@@ -223,15 +224,21 @@ class CalcPlotCRE(object):
             z = (array - mu) / std
             return z
 
-        for name, pos_l in self.annopos_d.items():
-            if name == region_name:
-                cre_z_region = normalize_array_region(self.cre, pos_l[0], pos_l[1])
-                self.cre_z_region.update({region_name: cre_z_region})
+        import pandas as pd
+        cre_z_df = pd.DataFrame(index=None, columns=[])
+
+        for region_name, pos_l in self.annopos_d.items():
+            cre_z_region = normalize_array_region(self.cre, pos_l[0], pos_l[1])
+            self.cre_z_region.update({region_name: cre_z_region})
+            cre_z_df = cre_z_df.append(pd.DataFrame({'CRE-Z': cre_z_region, 'region_name': region_name}))
+
+        #output as csv
+        cre_z_df.to_csv("{}/CRE-Z_region_array.csv".format(self.workdir))
 
     def extract_CRE_regions(self):
-        for name, pos_l in self.annopos_d.items():
+        for region_name, pos_l in self.annopos_d.items():
             cre_region = self.cre[pos_l[0]:pos_l[1]+1]
-            self.cre_region.update({name: cre_region})
+            self.cre_region.update({region_name: cre_region})
 
     def calc_mean_CRE_by_region(self):
         '''
@@ -389,8 +396,7 @@ if __name__ == "__main__":
 #    test.plot_wide()
 
 #    #領域ごとにCRE_Z
-#    test.calc_CRE_Z_region("RVT_connect")
-#    test.calc_CRE_Z_region("RNase_H")
+#    test.calc_CRE_Z_region()
 #    test.extract_high_pos_region("RVT_connect", 3.0)
 #    test.extract_high_pos_region("RNase_H", 3.0)
 #    test.extract_high_pos_region("RVT_connect", 2.0)
@@ -410,10 +416,11 @@ if __name__ == "__main__":
 #    test.barplot_mean_sd_CRE_by_region(plot_type='boxplot', outfile="{wd}/out_CRE_region_boxplot.png", order=["RVP", "RVT_1", "RVT_thumb", "RVT_connect", "RNase_H", "Integrase_Zn", "rve", "IN_DBD_C"])
 #    test.barplot_mean_sd_CRE_by_region(plot_type='violinplot', outfile="{wd}/out_CRE_region_violinplot.png", order=["RVP", "RVT_1", "RVT_thumb", "RVT_connect", "RNase_H", "Integrase_Zn", "rve", "IN_DBD_C"])
 
-    #17.2.13
-    test.extract_CRE_regions()
-    print("RVT_connect\n", test.cre_region["RVT_connect"])
-    print("RNase_H\n", test.cre_region["RNase_H"])
+    #17.2.13 #→やりたいこと既にcsvで出力してあった。
+#    test.extract_CRE_regions()
+#    print("RVT_connect\n", test.cre_region["RVT_connect"])
+#    print("RNase_H\n", test.cre_region["RNase_H"])
+    test.calc_CRE_Z_region()
 
 
 #    ws = 50
