@@ -92,6 +92,7 @@ class CalcPlotCRE(object):
             self.annopos_d = sn_utils.read_tomlfile(self.toml_file)
 
         self.cre_z_region = dict()
+        self.cre_region = dict()
 
     def parse_gs_file_gen_gs(self, gsf):
         with open(gsf, 'r') as fh:
@@ -226,6 +227,11 @@ class CalcPlotCRE(object):
             if name == region_name:
                 cre_z_region = normalize_array_region(self.cre, pos_l[0], pos_l[1])
                 self.cre_z_region.update({region_name: cre_z_region})
+
+    def extract_CRE_regions(self):
+        for name, pos_l in self.annopos_d.items():
+            cre_region = self.cre[pos_l[0]:pos_l[1]+1]
+            self.cre_region.update({name: cre_region})
 
     def calc_mean_CRE_by_region(self):
         '''
@@ -399,10 +405,16 @@ if __name__ == "__main__":
 #    test.calc_mean_CRE_Z_by_region()
 
     #17.1.16
-    test.barplot_mean_sd_CRE_by_region(plot_type='barplot', is_distplot_region=True, outfile="{wd}/out_CRE_region_barplot.png", order=["RVP", "RVT_1", "RVT_thumb", "RVT_connect", "RNase_H", "Integrase_Zn", "rve", "IN_DBD_C"])
+#    test.barplot_mean_sd_CRE_by_region(plot_type='barplot', is_distplot_region=True, outfile="{wd}/out_CRE_region_barplot.png", order=["RVP", "RVT_1", "RVT_thumb", "RVT_connect", "RNase_H", "Integrase_Zn", "rve", "IN_DBD_C"])
 #    test.barplot_mean_sd_CRE_by_region(plot_type='barplot-median', outfile="{wd}/out_CRE_region_barplot-median.png", order=["RVP", "RVT_1", "RVT_thumb", "RVT_connect", "RNase_H", "Integrase_Zn", "rve", "IN_DBD_C"])
 #    test.barplot_mean_sd_CRE_by_region(plot_type='boxplot', outfile="{wd}/out_CRE_region_boxplot.png", order=["RVP", "RVT_1", "RVT_thumb", "RVT_connect", "RNase_H", "Integrase_Zn", "rve", "IN_DBD_C"])
 #    test.barplot_mean_sd_CRE_by_region(plot_type='violinplot', outfile="{wd}/out_CRE_region_violinplot.png", order=["RVP", "RVT_1", "RVT_thumb", "RVT_connect", "RNase_H", "Integrase_Zn", "rve", "IN_DBD_C"])
+
+    #17.2.13
+    test.extract_CRE_regions()
+    print("RVT_connect\n", test.cre_region["RVT_connect"])
+    print("RNase_H\n", test.cre_region["RNase_H"])
+
 
 #    ws = 50
 #    plot_nparray_with_annopos(cre, annopos_d, outfile="{wd}/out_CRE_annopos.png".format(wd=workdir))
