@@ -1,0 +1,12 @@
+
+#P04578 (ENV_HV1H2)
+#uniprot
+V1 = [131,156]
+V2 = [157,196]
+V3 = [296,330]
+CD4-binding_loop = [364,374]
+V4 = [385,418]
+V5 = [461,471]
+Fusion_peptide = [512,532]
+Immunosuppression = [574,592]
+MPER = [662,683]

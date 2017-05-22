@@ -1,0 +1,7 @@
+
+#P04591 (GAG_HV1H2)
+#Chain
+Matrix_protein_p17 = [2, 132]
+Capsid_protein_p24 = [133, 363]
+Nucleocapsid_protein_p7 = [378, 432]
+p6-gag = [449, 500]

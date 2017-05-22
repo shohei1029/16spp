@@ -1,0 +1,27 @@
+
+#P04585 (gag-pol)
+p6-pol = [441, 488]
+
+bef_RVP = [441, 492]
+#bet_p6-pol___RVP = [489, 492] # too short
+bet_RVP__RVT_1 = [587, 649]
+#bet_RVT_1__RVT_thumb = [822, 827]
+bet_RVT_thumb__RVT_connect = [892, 904]
+bet_RVT_connect__RNase_H = [1007, 1022]
+bet_RNase_H__Integrase_Zn = [1145, 1154]
+bet_Integrase_Zn__rve = [1193, 1201]
+bet_rve__IN_DBD_C = [1309, 1367]
+aft_IN_DBD_C = [1416, 1435]
+
+## for prepare 
+#RVP = [493, 586]
+#RVT_1 = [650,821]
+#RVT_thumb = [828,891]
+#RVT_connect = [905,1006]
+#RNase_H = [1023,1144]
+#Integrase_Zn = [1155,1192]
+#rve = [1202,1308]
+#IN_DBD_C = [1368,1415]
+
+#memo
+#The BLAST engine is designed for searching for sequence similarities over large sequences. Searching the databases with short sequences may result in an error. The minimum length is 11 bases, however the recommended minimum sequence length is 22 bases (nucleotides/blastn) or 6 amino acids (proteins/blastp). Some searches under this recommended size may run but even single mismatches can cause the search to fail.
