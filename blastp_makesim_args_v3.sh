@@ -24,6 +24,7 @@ set -euo pipefail
 # DOMAIN ex. RVT_1
 
 EVALUE=1e-5
+SCRIPT_BLAST_TO_SIM=../v5_blast7_tosims.py
 
 FASTA_FILE=$1
 
@@ -46,24 +47,22 @@ fi
 #mkblastdb -> blastp @ iris
 BLASTDB=${WD}/blastdb
 export BLASTDB=${WD}/blastdb
+mkdir -p ${BLASTDB}
 
-if [[ ! -f ${FASTA_FILE} ]]; then
+if [[ ! -f ../${FASTA_FILE} ]]; then
     echo "can't find ${FASTA_FILE}, exitting.."
     exit 1
 fi
 
 #mkblastdb
-cd $BLASTDB
 echo "making BLAST Database.."
-makeblastdb -in ${FASTA_FILE} -dbtype prot -hash_index -parse_seqids -max_file_sz 2GB
+makeblastdb -in ../${FASTA_FILE} -out ${BLASTDB}/${FASTA_FILE} -dbtype prot -hash_index -parse_seqids -max_file_sz 2GB
 
 #blast
-cd $WD
-
 BLAST_OUT_FILE_NAME=blastp_${EVALUE}.txt
 
 echo "BLAST.."
-blastp -query ${FASTA_FILE} -db ${FASTA_FILE} -num_threads 16 -outfmt 7 -evalue ${EVALUE} -max_target_seqs 99999999 -out ${BLAST_OUT_FILE_NAME}
+blastp -query ../${FASTA_FILE} -db ${FASTA_FILE} -num_threads 16 -outfmt 7 -evalue ${EVALUE} -max_target_seqs 99999999 -out ${BLAST_OUT_FILE_NAME}
 
 
 #######################
@@ -73,7 +72,7 @@ blastp -query ${FASTA_FILE} -db ${FASTA_FILE} -num_threads 16 -outfmt 7 -evalue 
 grep -v '#' ${BLAST_OUT_FILE_NAME} | LC_ALL=C sort -k 1,2 -u > mbs_${BLAST_OUT_FILE_NAME}
 
 echo "creating sim files.."
-cat mbs_${BLAST_OUT_FILE_NAME} | python ./v5_blast7_tosims.py > sim_${BLAST_OUT_FILE_NAME}
+cat mbs_${BLAST_OUT_FILE_NAME} | python ${SCRIPT_BLAST_TO_SIM} > sim_${BLAST_OUT_FILE_NAME}
 
 
 # #%identityの閾値を変える時。未変更 #hoge.sim.txtじゃなく，hoge.txtになってしまう。。
