@@ -24,7 +24,7 @@ set -euo pipefail
 # DOMAIN ex. RVT_1
 
 EVALUE=1e-5
-SCRIPT_BLAST_TO_SIM=../v5_blast7_tosims.py
+SCRIPT_BLAST_TO_SIM=../v5naive_blast7_tosims.py
 
 FASTA_FILE=$1
 
