@@ -1,6 +1,7 @@
 # 16spp
-from spring of 2016 
+Python and Shell scripts for my research.
+These scripts were used from spring of 2016.
 
-private scripts written by S.N.
+Private scripts written by S.N.
 
 
